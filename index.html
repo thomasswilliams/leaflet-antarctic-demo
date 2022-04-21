@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <!-- don't zoom the page (will instead zoom on map) -->
+  <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,minimal-ui">
+  <meta name="description" content="Antarctic map demo using Leaflet.js by Thomas Williams https://github.com/thomasswilliams">
+
+  <title>Leaflet Antarctic demo</title>
+
+  <!-- Leaflet.js style from CDN -->
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.8.0/dist/leaflet.css" integrity="sha512-hoalWLoI8r4UszCkZ5kL8vayOGVae1oxXe/2A4AO6J9+580uKHDO3JdHb7NzwwzK5xr/Fs0W40kiNHxM9vyTtQ==" crossorigin="anonymous" />
+  <!-- local styles -->
+  <style>
+    /* no padding on body, amp will go right to edges */
+    body {
+      margin: 0;
+      padding: 0;
+    }
+    /* make map fill whole page */
+    html, body, #map {
+      height: 100%;
+      width: 100vw;
+    }
+    /* at very narrow widths (under 660px), move the scale above acknowledgements */
+    @media (max-width: 660px) {
+      .leaflet-control-scale {
+        margin-bottom: 24px !important;
+      }
+    }
+    /* at narrowest widths (under 560px), add left padding to acknowledgements so not covered by sidebar */
+    @media (max-width: 560px) {
+      /* move scale control above two-line acknowledgements */
+      .leaflet-control-scale {
+        margin-bottom: 40px !important;
+      }
+      .leaflet-control-attribution {
+        padding-left: 45px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <!-- map DIV -->
+  <div id="map"></div>
+
+  <!-- Leaflet.js script from CDN -->
+  <script src="https://unpkg.com/leaflet@1.8.0/dist/leaflet.js" integrity="sha512-BB3hKbKWOc9Ez/TAwyWxNXeoV9c1v6FIeYiBieIWkpLjauysF18NzgR1MBNBXf8/KABdlkX68nAhlwcDFLGPCQ==" crossorigin="anonymous"></script>
+  <!-- local copy of Proj4.js downloaded from http://proj4js.org/ -->
+  <script src="/scripts/proj4.min.js" integrity="sha512-/Kk+aVHTXWO8kRBUkiUsP8PcoYUBVQt16OeSqjIAAGtc+wD8krb5AC8rb7IOTojX4Gbn2OijbYbKuTVlBnwZ1w=="></script>
+  <!-- local copy of Proj4Leaflet downloaded from https://kartena.github.io/Proj4Leaflet/ -->
+  <script src="/scripts/proj4leaflet.js" integrity="sha512-ucracs0nhqMkR3MjkmDpH64GtVvAZ8d8HpxE1DT9+b7Btc/Z21GmAPs/NYc2ZbrlNRK6FUv6iROVS7V+Qq02LA=="></script>
+
+  <!-- Pouch db for in-browser caching from CDN -->
+  <script src="https://unpkg.com/pouchdb@^5.2.0/dist/pouchdb.js" integrity="sha512-V3KeJQJGLxtQTBpiZCjNNxVMoTgT1L8nd6/HZ9U7LrVM2CLKZttqZhyMibZetm7KGr8WO6iYmsdpdwPEltE2yA==" crossorigin="anonymous"></script>
+  <!-- Leaflet.TileLayer.PouchDBCached from https://github.com/MazeMap/Leaflet.TileLayer.PouchDBCached from CDN -->
+  <script src="https://unpkg.com/leaflet.tilelayer.pouchdbcached@latest/L.TileLayer.PouchDBCached.js" integrity="sha512-1nmvAgS3BuRHdL/jYmw+Y55aagEd0xllTA9WTAAqkObDcemLTmqB0jJfLhhdN4drvX7WY671Evj+11i2U+DKTA==" crossorigin="anonymous"></script>
+
+  <!-- scripts for page -->
+  <script type="text/javascript">
+
+    // calculate user's pixel ratio, better for maps on high pixel-density screens
+    // default to 1 if not available
+    // from https://tile.gbif.org/ui/3031/EPSG3031-leaflet.js
+    var pixel_ratio = parseInt(window.devicePixelRatio) || 1;
+
+    // maximum zoom level (set to higher number for more zoom)
+    var max_zoom = 6;
+    // tile size for OpenStreetMap base layer
+    var tile_size = 512;
+
+    // extent of zoom projection to equator, see https://tile.gbif.org/ui/
+    // note because of the projection the extent will be a circle, with Antarctica in the center
+    // however the overall map will be square (with blanks in corners)
+    var extent = 12367396.2185;
+    // generate zoom resolutions array
+    // (will end up with non-standard resolutions starting at around 48000, ending at ≈188)
+    // needed for GBIF tiles - changing this will impact tiles!
+    var resolutions = Array(max_zoom + 1).fill().map((_, i) => ( extent / tile_size / Math.pow(2, i-1) ));
+
+    // create EPSG3031 coordinate reference system (CRS) for Leaflet
+    // requires proj4 & proj4leaflet
+    // adapted from https://github.com/nasa-gibs/gibs-web-examples/blob/master/examples/leaflet/antarctic-epsg3031.js,
+    // https://tile.gbif.org/ui/3031/EPSG3031-leaflet.js
+    var EPSG3031 = new L.Proj.CRS(
+      // name
+      'EPSG:3031',
+      // proj4 definition of CRS
+      // see https://spatialreference.org/ref/epsg/3031/, https://epsg.io/3031
+      '+proj=stere +lat_0=-90 +lat_ts=-71 +lon_0=0 +k=1 +x_0=0 +y_0=0 +ellps=WGS84 +datum=WGS84 +units=m +no_defs',
+      {
+        // top left point of the map
+        origin: [-extent, extent],
+        // bounds of the CRS in projected coordinates (i.e. from top left point
+        // to bottom right point
+        projectedBounds: L.bounds(L.point(-extent, extent), L.point(extent, -extent)),
+        // zoom resolutions
+        resolutions: resolutions
+      }
+    );
+
+    // set map view (center, zoom, CRS)
+    var map = L.map('map', {
+      // 90 degrees south
+      center: [-90, 0],
+      // default zoom level can see whole Antarctic continent for desktops
+      // zoom out for high pixel density (3)
+      zoom: pixel_ratio > 1 ? 2 : 3,
+      // maximum zoom
+      maxZoom: max_zoom,
+      // CRS
+      crs: EPSG3031
+    });
+
+    // base map (from https://tile.gbif.org/ui/)
+    // use light style, SRS 3031
+    L.tileLayer('https://tile.gbif.org/3031/omt/{z}/{x}/{y}@{r}x.png?style=gbif-light'.replace('{r}', pixel_ratio), {
+      tileSize: tile_size,
+      // cache tiles (much faster)
+      // once fetched from remote server, subsequent network
+      // requests will be to "blob:" (IndexedDB)
+      // from https://github.com/MazeMap/Leaflet.TileLayer.PouchDBCached
+      useCache: true,
+      crossOrigin: true,
+      attribution: 'Map data &copy; <a href="https://www.openstreetmap.org/copyright" rel="noopener noreferrer">OpenStreetMap</a> contributors, &copy; <a href="https://www.openmaptiles.org/copyright" rel="noopener noreferrer">OpenMapTiles</a>'
+    }).addTo(map);
+
+    // add overall attribution and reference for CRS (will be merged with any layer attribution)
+    // by default, bottom-right corner
+    map.attributionControl.addAttribution('| Projection: <a href="http://spatialreference.org/ref/epsg/wgs-84-antarctic-polar-stereographic/" rel="noopener noreferrer">EPSG3031</a>');
+
+    // create scale control, see https://www.tutorialspoint.com/leafletjs/leafletjs_controls.htm
+    var scale = L.control.scale();
+    // add scale control to map
+    // by default, bottom-left corner
+    scale.addTo(map);
+
+  </script>
+</body>
+</html>
