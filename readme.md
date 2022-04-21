@@ -13,4 +13,4 @@ Features:
 
 See blog post at <> for more detail.
 
-Licensed using the MIT license.
+Licensed under the [MIT license](LICENSE).
