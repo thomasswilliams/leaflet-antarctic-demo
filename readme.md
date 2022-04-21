@@ -2,6 +2,8 @@
 
 Demo of an Antarctic map built with Leaflet and other open-source tools, using Spatial Reference System Identifier 3031.
 
+Hosted with GitHub pages at <https://thomasswilliams.github.io/leaflet-antarctic-demo/>.
+
 Features:
 
 - well-commented HTML/javascript code :-)
