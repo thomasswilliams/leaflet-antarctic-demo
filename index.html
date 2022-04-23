@@ -56,9 +56,6 @@
   <!-- Leaflet.TileLayer.PouchDBCached from https://github.com/MazeMap/Leaflet.TileLayer.PouchDBCached from CDN -->
   <script src="https://unpkg.com/leaflet.tilelayer.pouchdbcached@latest/L.TileLayer.PouchDBCached.js" integrity="sha512-1nmvAgS3BuRHdL/jYmw+Y55aagEd0xllTA9WTAAqkObDcemLTmqB0jJfLhhdN4drvX7WY671Evj+11i2U+DKTA==" crossorigin="anonymous"></script>
 
-  <!-- Leaflet graticule from https://github.com/Leaflet/Leaflet.Graticule -->
-  <script src="https://unpkg.com/leaflet-graticule@0.0.1/Leaflet.Graticule.js" integrity="sha512-w7zxOEZWxBgK7eNIIQcvhr1VKNnC51vsVdtx7LsbCEfvllC2IrwinzRcBm+/34H5J+o/OJsp8QyohW3XCWaEAQ==" crossorigin="anonymous"></script>
-
   <!-- scripts for page -->
   <script type="text/javascript">
 
@@ -113,7 +110,9 @@
       // maximum zoom
       maxZoom: max_zoom,
       // CRS
-      crs: EPSG3031
+      crs: EPSG3031,
+
+      worldCopyJump: false
     });
 
     // base map (from https://tile.gbif.org/ui/)
@@ -139,11 +138,6 @@
     // by default, bottom-left corner
     scale.addTo(map);
 
-    // add graticules (latitude/longitude lines)
-    L.latlngGraticule({
-      showLabel: true,
-      latLineCurved: 2
-    }).addTo(map);
   </script>
 </body>
 </html>
