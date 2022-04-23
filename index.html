@@ -46,10 +46,10 @@
 
   <!-- Leaflet.js script from CDN -->
   <script src="https://unpkg.com/leaflet@1.8.0/dist/leaflet.js" integrity="sha512-BB3hKbKWOc9Ez/TAwyWxNXeoV9c1v6FIeYiBieIWkpLjauysF18NzgR1MBNBXf8/KABdlkX68nAhlwcDFLGPCQ==" crossorigin="anonymous"></script>
-  <!-- local copy of Proj4.js downloaded from http://proj4js.org/ -->
-  <script src="./scripts/proj4.min.js" integrity="sha512-/Kk+aVHTXWO8kRBUkiUsP8PcoYUBVQt16OeSqjIAAGtc+wD8krb5AC8rb7IOTojX4Gbn2OijbYbKuTVlBnwZ1w=="></script>
-  <!-- local copy of Proj4Leaflet downloaded from https://kartena.github.io/Proj4Leaflet/ -->
-  <script src="./scripts/proj4leaflet.js" integrity="sha512-ucracs0nhqMkR3MjkmDpH64GtVvAZ8d8HpxE1DT9+b7Btc/Z21GmAPs/NYc2ZbrlNRK6FUv6iROVS7V+Qq02LA=="></script>
+  <!-- Proj4.js from CDN -->
+  <script src="https://unpkg.com/proj4@2.7.5/dist/proj4-src.js" integrity="sha512-v9fKB/Tdskpid8kkFcCde7j8nyykKK9fBAZIU8pzTuMIOMJYccsutTxn8qUS/p/32FG/ynVrsbj+dsaya/jNEg==" crossorigin="anonymous"></script>
+  <!-- Proj4Leaflet from CDN -->
+  <script src="https://unpkg.com/proj4leaflet@1.0.2/src/proj4leaflet.js" integrity="sha512-NA+0vegFw6AiYXT23H+hk43LxqwpJkkviK/vHTESeu+jUpvWssfQRWWqSR07aUhGSKtfpkdlE8YFrVaHsnb3jw==" crossorigin="anonymous"></script>
 
   <!-- Pouch db for in-browser caching from CDN -->
   <script src="https://unpkg.com/pouchdb@^5.2.0/dist/pouchdb.js" integrity="sha512-V3KeJQJGLxtQTBpiZCjNNxVMoTgT1L8nd6/HZ9U7LrVM2CLKZttqZhyMibZetm7KGr8WO6iYmsdpdwPEltE2yA==" crossorigin="anonymous"></script>
@@ -69,13 +69,14 @@
     // tile size for OpenStreetMap base layer
     var tile_size = 512;
 
-    // extent of zoom projection to equator, see https://tile.gbif.org/ui/
+    // extent of map to equator (based on tile size of 512),
+    // see https://tile.gbif.org/ui/
     // note because of the projection the extent will be a circle, with Antarctica in the center
     // however the overall map will be square (with blanks in corners)
     var extent = 12367396.2185;
     // generate zoom resolutions array
-    // (will end up with non-standard resolutions starting at around 48000, ending at ≈188)
-    // needed for GBIF tiles - changing this will impact tiles!
+    // will end up with array starting at around 48000 (fully zoomed out) to ≈188
+    // needed for GBIF tiles - changing generated resolutions will impact tiles!
     var resolutions = Array(max_zoom + 1).fill().map((_, i) => ( extent / tile_size / Math.pow(2, i-1) ));
 
     // create EPSG3031 coordinate reference system (CRS) for Leaflet
@@ -125,7 +126,7 @@
       attribution: 'Map data &copy; <a href="https://www.openstreetmap.org/copyright" rel="noopener noreferrer">OpenStreetMap</a> contributors, &copy; <a href="https://www.openmaptiles.org/copyright" rel="noopener noreferrer">OpenMapTiles</a>'
     }).addTo(map);
 
-    // add overall attribution and reference for CRS (will be merged with any layer attribution)
+    // overall attribution and reference for CRS (will be merged with layer attributions)
     // by default, bottom-right corner
     map.attributionControl.addAttribution('| Projection: <a href="http://spatialreference.org/ref/epsg/wgs-84-antarctic-polar-stereographic/" rel="noopener noreferrer">EPSG3031</a>');
 
