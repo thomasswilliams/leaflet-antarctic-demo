@@ -46,15 +46,18 @@
 
   <!-- Leaflet.js script from CDN -->
   <script src="https://unpkg.com/leaflet@1.8.0/dist/leaflet.js" integrity="sha512-BB3hKbKWOc9Ez/TAwyWxNXeoV9c1v6FIeYiBieIWkpLjauysF18NzgR1MBNBXf8/KABdlkX68nAhlwcDFLGPCQ==" crossorigin="anonymous"></script>
-  <!-- Proj4.js from CDN -->
+  <!-- Proj4.js from https://github.com/proj4js/proj4js -->
   <script src="https://unpkg.com/proj4@2.7.5/dist/proj4-src.js" integrity="sha512-v9fKB/Tdskpid8kkFcCde7j8nyykKK9fBAZIU8pzTuMIOMJYccsutTxn8qUS/p/32FG/ynVrsbj+dsaya/jNEg==" crossorigin="anonymous"></script>
-  <!-- Proj4Leaflet from CDN -->
+  <!-- Proj4Leaflet from https://github.com/kartena/Proj4Leaflet -->
   <script src="https://unpkg.com/proj4leaflet@1.0.2/src/proj4leaflet.js" integrity="sha512-NA+0vegFw6AiYXT23H+hk43LxqwpJkkviK/vHTESeu+jUpvWssfQRWWqSR07aUhGSKtfpkdlE8YFrVaHsnb3jw==" crossorigin="anonymous"></script>
 
-  <!-- Pouch db for in-browser caching from CDN -->
+  <!-- Pouch db for in-browser caching from https://github.com/pouchdb/pouchdb -->
   <script src="https://unpkg.com/pouchdb@^5.2.0/dist/pouchdb.js" integrity="sha512-V3KeJQJGLxtQTBpiZCjNNxVMoTgT1L8nd6/HZ9U7LrVM2CLKZttqZhyMibZetm7KGr8WO6iYmsdpdwPEltE2yA==" crossorigin="anonymous"></script>
   <!-- Leaflet.TileLayer.PouchDBCached from https://github.com/MazeMap/Leaflet.TileLayer.PouchDBCached from CDN -->
   <script src="https://unpkg.com/leaflet.tilelayer.pouchdbcached@latest/L.TileLayer.PouchDBCached.js" integrity="sha512-1nmvAgS3BuRHdL/jYmw+Y55aagEd0xllTA9WTAAqkObDcemLTmqB0jJfLhhdN4drvX7WY671Evj+11i2U+DKTA==" crossorigin="anonymous"></script>
+
+  <!-- Leaflet graticule from https://github.com/Leaflet/Leaflet.Graticule -->
+  <script src="https://unpkg.com/leaflet-graticule@0.0.1/Leaflet.Graticule.js" integrity="sha512-w7zxOEZWxBgK7eNIIQcvhr1VKNnC51vsVdtx7LsbCEfvllC2IrwinzRcBm+/34H5J+o/OJsp8QyohW3XCWaEAQ==" crossorigin="anonymous"></script>
 
   <!-- scripts for page -->
   <script type="text/javascript">
@@ -136,6 +139,11 @@
     // by default, bottom-left corner
     scale.addTo(map);
 
+    // add graticules (latitude/longitude lines)
+    L.latlngGraticule({
+      showLabel: true,
+      latLineCurved: 2
+    }).addTo(map);
   </script>
 </body>
 </html>
