@@ -4,6 +4,7 @@
   <meta charset="utf-8">
   <!-- don't zoom the page (will instead zoom on map) -->
   <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,minimal-ui">
+  <meta name="description" content="Demo of an interactive Antarctic map built with Leaflet and other open-source tools, using Spatial Reference System Identifier 3031.">
   <link rel="shortcut icon" href="./favicon.ico">
 
   <title>Leaflet Antarctic demo</title>
@@ -21,6 +22,11 @@
     html, body, #map {
       height: 100%;
       width: 100vw;
+    }
+    /* aesthetics only - re-color GBIF basemap layer from greys to blues
+       inspired by https://tomik23.github.io/leaflet-examples/#48.tiles-gray */
+    .basemap-layer {
+      filter: sepia(30%) hue-rotate(160deg) contrast(120%);
     }
     /* at very narrow widths (under 660px), move the scale above acknowledgements */
     @media (max-width: 660px) {
@@ -93,7 +99,7 @@
         // top left point of the map
         origin: [-extent, extent],
         // bounds of the CRS in projected coordinates (i.e. from top left point
-        // to bottom right point
+        // to bottom right point)
         projectedBounds: L.bounds(L.point(-extent, extent), L.point(extent, -extent)),
         // zoom resolutions
         resolutions: resolutions
@@ -105,13 +111,14 @@
       // 90 degrees south
       center: [-90, 0],
       // default zoom level can see whole Antarctic continent for desktops
-      // zoom out for high pixel density (3)
+      // zoom out for high pixel density on mobile (3)
       zoom: pixel_ratio > 1 ? 2 : 3,
-      // maximum zoom
+      // minimum & maximum zoom
+      minZoom: 1,
       maxZoom: max_zoom,
       // CRS
       crs: EPSG3031,
-
+      // disable jumping to a copy of the map (plays up on mobile)
       worldCopyJump: false
     });
 
@@ -125,6 +132,8 @@
       // from https://github.com/MazeMap/Leaflet.TileLayer.PouchDBCached
       useCache: true,
       crossOrigin: true,
+      // set CSS class so can style
+      className: 'basemap-layer',
       attribution: 'Map data &copy; <a href="https://www.openstreetmap.org/copyright" rel="noopener noreferrer">OpenStreetMap</a> contributors, &copy; <a href="https://www.openmaptiles.org/copyright" rel="noopener noreferrer">OpenMapTiles</a>'
     }).addTo(map);
 
