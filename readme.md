@@ -13,7 +13,7 @@ Features:
 - open-source OpenStreetMap/OpenMapTiles tiles from Global Biodiversity Information Facility (GBIF), see <https://tile.gbif.org/ui/>
 - caching of tiles in-browser using <https://github.com/MazeMap/Leaflet.TileLayer.PouchDBCached>
 
-See my blog post at <https://thomasswilliams.github.io/development/2022/05/02/leaflet-antarctica-demo.html> for more detail.
+See my blog posts at <https://thomasswilliams.github.io/development/2022/05/02/leaflet-antarctica-demo.html> (base map, projection, tiles) and <https://thomasswilliams.github.io/development/2022/05/12/leaflet-antarctica-demo-1a.html> (GeoJSON) for more detail.
 
 To host yourself, download this repo, and serve `index.html` (for instance, using Node module `http-serve` calling a command line like `http-server -o`).
 
