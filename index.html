@@ -147,6 +147,67 @@
     // by default, bottom-left corner
     scale.addTo(map);
 
+    // ************************************************************************
+    // "Current Antarctic large iceberg positions derived from ASCAT and OSCAT-2"
+    // retrieved from https://www.scp.byu.edu/current_icebergs.html May 2022 (looks to be last updated late April 2022)
+    // load positions from GeoJSON file, see blog post at 
+    // ************************************************************************
+
+    // function to load a GeoJSON file
+    async function loadGeoJSON() {
+      // get the iceberg location JSON file from this repo
+      // content adapted from list at https://www.scp.byu.edu/current_icebergs.html
+      const response = await fetch('./icebergs-apr-2022.json');
+      // convert response (string) to JSON object
+      const json = await response.json();
+      // return the JSON object
+      return json;
+    }
+
+    // function to create an SVG icon for icebergs
+    // adapted from https://onestepcode.com/leaflet-markers-svg-icons/
+    // create a triangle polygon using SVG
+    const IcebergIcon = L.divIcon({
+      html: `<svg width="10" height="10" version="1.1" xmlns="http://www.w3.org/2000/svg">
+        <polygon points="10,0 10,10 0,5" fill="#ee82ee"/>
+      </svg>`,
+      className: 'iceberg-icon',
+      // 10 by 10 icon
+      iconSize: [10, 10],
+      // icon anchor in center
+      iconAnchor: [5, 5]
+    });
+
+    // function called once for each created feature in a layer
+    // add popup from "name" properties from GeoJSON
+    // adapted from https://javascript.tutorialink.com/dynamically-loading-multiple-external-geojson-data-files-and-calling-multiple-layers-dynamically-using-leaflet/
+    // Leaflet "onEachFeature" function
+    const addPopupFromFeatureProperties = (feature, layer) => {
+      // create popup text from "name" property
+      // start with initially empty popup
+      let popupContent = '';
+      if (feature.properties && feature.properties.name) {
+        popupContent = '<strong>' + feature.properties.name + '</strong>';
+      }
+      // if we have popup text, add it
+      if (popupContent && popupContent !== '') {
+        layer.bindPopup(popupContent);
+      }
+    };
+
+    // style points as iceberg icons
+    // Leaflet "pointToLayer" function
+    const IcebergPoint = (geoJsonPoint, latlng) => {
+      return L.marker(latlng, { icon: IcebergIcon });
+    };
+
+    // add GeoJSON layer: load file, then display individual points as set icon
+    // first, load the passed JSON file
+    loadGeoJSON().then(data => {
+      // create new Leaflet layer from JSON object
+      // call our own functions for the style of marker, and popup
+      L.geoJSON([data], { pointToLayer: IcebergPoint, onEachFeature: addPopupFromFeatureProperties }).addTo(map);
+    });
   </script>
 </body>
 </html>
