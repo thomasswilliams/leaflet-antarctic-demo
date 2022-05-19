@@ -193,7 +193,7 @@
       }
       // if we have popup text, add it
       if (popupContent && popupContent !== '') {
-        layer.bindPopup(popupContent);
+        layer.bindPopup(popupContent, { closeButton: false });
       }
     };
 
@@ -216,14 +216,14 @@
     // then add GeoJSON layers to map using shapefile-js from https://github.com/calvinmetcalf/shapefile-js
     // leave off extension, shapefile-js will load shp, prj, dbf and cpg files
     // with same name from same directory
-    // need full URL, not relative, so use somewhat hacky way to get domain from
+    // need full URL, not relative, so use somewhat hacky way to add to current path from
     // document.baseURI
     // see blog post at https://thomasswilliams.github.io/development/2022/05/19/leaflet-antarctica-demo-2.html
     // ************************************************************************
 
     // load graticule shapefiles part 1: longitude lines every 30 degrees
     // shape files from Quantarctica
-    shp(new URL(document.baseURI).origin + '/30dg_longitude/30dg_longitude')
+    shp(new URL(document.baseURI) + '30dg_longitude/30dg_longitude')
       .then((data) => {
         // add GeoJSON layer, set style
         L.geoJson(data, {
@@ -244,7 +244,7 @@
     // load graticule shapefiles part 2: latitude lines (projected as circles)
     // in 10 degree increments, only to 40° south
     // shape files from Quantarctica
-    shp(new URL(document.baseURI).origin + '/10dg_latitude/10dg_latitude')
+    shp(new URL(document.baseURI) + '10dg_latitude/10dg_latitude')
       .then((data) => {
         L.geoJson(data, {
           style: () => ({
