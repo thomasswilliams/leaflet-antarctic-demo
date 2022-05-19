@@ -16,6 +16,6 @@ Features:
 
 See my blog posts at <https://thomasswilliams.github.io/development/2022/05/02/leaflet-antarctica-demo.html> (base map, projection, tiles), <https://thomasswilliams.github.io/development/2022/05/12/leaflet-antarctica-demo-1a.html> (GeoJSON) and <https://thomasswilliams.github.io/development/2022/05/19/leaflet-antarctica-demo-2.html> (shapefiles) for more detail.
 
-To host yourself, download this repo, and serve `index.html` (for instance, using Node module `http-serve` calling a command line like `http-server -o`).
+To host yourself, download this repo, and serve `index.html` (for instance, using Node module `http-serve` calling a command line like `http-server -o -c-1`).
 
 Licensed under the [MIT license](LICENSE).
