@@ -1,0 +1,6 @@
+<!DOCTYPE qgis PUBLIC 'http://mrcc.com/qgis.dtd' 'SYSTEM'><qgis version="3.16.1-Hannover"><language>en</language><type>dataset</type>
+<parentidentifier></parentidentifier>
+<identifier>../Miscellaneous/Graticules/30dg_longitude.shp</identifier>
+<title>30-dg longitude</title>
+<abstract>
+</abstract></qgis>

@@ -1,0 +1,6 @@
+<!DOCTYPE qgis PUBLIC 'http://mrcc.com/qgis.dtd' 'SYSTEM'><qgis version="3.16.1-Hannover"><language>en</language><type>dataset</type>
+<parentidentifier></parentidentifier>
+<identifier>../Miscellaneous/Graticules/10dg_latitude.shp</identifier>
+<title>10-dg latitude</title>
+<abstract>
+</abstract></qgis>

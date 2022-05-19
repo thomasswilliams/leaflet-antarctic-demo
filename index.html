@@ -61,6 +61,8 @@
   <script src="https://unpkg.com/pouchdb@^5.2.0/dist/pouchdb.js" integrity="sha512-V3KeJQJGLxtQTBpiZCjNNxVMoTgT1L8nd6/HZ9U7LrVM2CLKZttqZhyMibZetm7KGr8WO6iYmsdpdwPEltE2yA==" crossorigin="anonymous"></script>
   <!-- Leaflet.TileLayer.PouchDBCached from https://github.com/MazeMap/Leaflet.TileLayer.PouchDBCached from CDN -->
   <script src="https://unpkg.com/leaflet.tilelayer.pouchdbcached@latest/L.TileLayer.PouchDBCached.js" integrity="sha512-1nmvAgS3BuRHdL/jYmw+Y55aagEd0xllTA9WTAAqkObDcemLTmqB0jJfLhhdN4drvX7WY671Evj+11i2U+DKTA==" crossorigin="anonymous"></script>
+  <!-- convert shapefiles to GeoJSON from CDN, see https://github.com/calvinmetcalf/shapefile-js -->
+  <script src="https://unpkg.com/shpjs@4.0.2/dist/shp.js" integrity="sha512-kFyvD9oByjTbgOdnltUfNRlZXEV+FX4G43Rnbg6N2W2cmwLF4t0mOBb48akhxHFPYKiTKu1zNNe2an9eq7gGFA==" crossorigin="anonymous"></script>
 
   <!-- scripts for page -->
   <script type="text/javascript">
@@ -139,7 +141,7 @@
 
     // overall attribution and reference for CRS (will be merged with layer attributions)
     // by default, bottom-right corner
-    map.attributionControl.addAttribution('| Projection: <a href="http://spatialreference.org/ref/epsg/wgs-84-antarctic-polar-stereographic/" rel="noopener noreferrer">EPSG3031</a>');
+    map.attributionControl.addAttribution('&copy; <a href="https://www.npolar.no/quantarctica/" rel="noopener noreferrer">Quantarctica and the Norwegian Polar Institute</a> | Projection: <a href="http://spatialreference.org/ref/epsg/wgs-84-antarctic-polar-stereographic/" rel="noopener noreferrer">EPSG3031</a>');
 
     // create scale control, see https://www.tutorialspoint.com/leafletjs/leafletjs_controls.htm
     var scale = L.control.scale();
@@ -208,6 +210,53 @@
       // call our own functions for the style of marker, and popup
       L.geoJSON([data], { pointToLayer: IcebergPoint, onEachFeature: addPopupFromFeatureProperties }).addTo(map);
     });
+
+    // ************************************************************************
+    // load shapefiles (collection of files with same name but different extensions)
+    // then add GeoJSON layers to map using shapefile-js from https://github.com/calvinmetcalf/shapefile-js
+    // leave off extension, shapefile-js will load shp, prj, dbf and cpg files
+    // with same name from same directory
+    // need full URL, not relative, so use somewhat hacky way to get domain from
+    // document.baseURI
+    // see blog post at https://thomasswilliams.github.io/development/2022/05/19/leaflet-antarctica-demo-2.html
+    // ************************************************************************
+
+    // load graticule shapefiles part 1: longitude lines every 30 degrees
+    // shape files from Quantarctica
+    shp(new URL(document.baseURI).origin + '/30dg_longitude/30dg_longitude')
+      .then((data) => {
+        // add GeoJSON layer, set style
+        L.geoJson(data, {
+          style: () => ({
+            // light lines
+            color: '#acacad',
+            weight: 0.8,
+            opacity: 0.5,
+            // no fill
+            fillColor: 'transparent'
+          }),
+          // CSS class for styling
+          className: 'lat-long-lines-layer',
+          // not interactive
+          interactive: false
+        }).addTo(map);
+      });
+    // load graticule shapefiles part 2: latitude lines (projected as circles)
+    // in 10 degree increments, only to 40° south
+    // shape files from Quantarctica
+    shp(new URL(document.baseURI).origin + '/10dg_latitude/10dg_latitude')
+      .then((data) => {
+        L.geoJson(data, {
+          style: () => ({
+            color: '#acacad',
+            weight: 0.8,
+            opacity: 0.5,
+            fillColor: 'transparent'
+          }),
+          className: 'lat-long-lines-layer',
+          interactive: false
+        }).addTo(map);
+      });
   </script>
 </body>
 </html>
