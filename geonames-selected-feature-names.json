@@ -1,0 +1,9 @@
+{
+  "type": "FeatureCollection",
+  "features": [
+    { "type": "Feature", "geometry": {"type": "Point", "coordinates": [-45.533, -60.65] },  "properties": { "geonameid": 6635389, "name": "Iceberg Bay", "feature_class": "H", "feature_code": "BAY" } },
+    { "type": "Feature", "geometry": {"type": "Point", "coordinates": [105, -65] },  "properties": { "geonameid": 6637723, "name": "Mawson Sea", "feature_class": "H", "feature_code": "SEA" } },
+    { "type": "Feature", "geometry": {"type": "Point", "coordinates": [-175, -75] },  "properties": { "geonameid": 4036625, "name": "Ross Sea", "feature_class": "H", "feature_code": "SEA" } },
+    { "type": "Feature", "geometry": {"type": "Point", "coordinates": [-45, -73] },  "properties": { "geonameid": 4036624, "name": "Weddell Sea", "feature_class": "H", "feature_code": "SEA" } }
+  ]
+}

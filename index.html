@@ -28,6 +28,15 @@
     .basemap-layer {
       filter: sepia(30%) hue-rotate(160deg) contrast(120%);
     }
+    /* feature name label */
+    .feature-name-label {
+      color: #99999a;
+      font-style: italic;
+      font-size: 10px;
+      /* disable interactivity */
+      pointer-events: none !important;
+      user-select: none;
+    }
     /* at very narrow widths (under 660px), move the scale above acknowledgements */
     @media (max-width: 660px) {
       .leaflet-control-scale {
@@ -257,6 +266,34 @@
             fillColor: 'transparent'
           }),
           className: 'lat-long-lines-layer',
+          interactive: false
+        }).addTo(map);
+      });
+
+    // ************************************************************************
+    // load small selection of feature names from GeoJSON file and add as a layer
+    // each point in the GeoJSON file will be a feature name label (text) with no marker
+    // feature names should not be interactive
+    // see blog post at https://thomasswilliams.github.io/development/2022/06/02/leaflet-antarctica-demo-3.html
+    // ************************************************************************
+    fetch('./geonames-selected-feature-names.json')
+      // convert the response to JSON object
+      .then(response => response.json())
+      .then(data => {
+        // create new Leaflet layer from JSON object
+        L.geoJSON(data, {
+          pointToLayer: (feature, latlng) => {
+            // create a DivIcon at the lat/long
+            // see docs at https://leafletjs.com/reference.html#divicon
+            return L.marker(latlng, {
+              icon: new L.DivIcon({
+                className: 'feature-name-label',
+                // the text of the DivIcon will be "name" property
+                html: feature.properties.name
+              })
+            });
+          },
+          className: 'feature-names-layer',
           interactive: false
         }).addTo(map);
       });
